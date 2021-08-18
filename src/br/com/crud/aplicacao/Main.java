@@ -7,7 +7,7 @@ import br.com.crud.userdao.UserDAO;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		String choice;
 		Scanner scan = new Scanner(System.in);
@@ -19,7 +19,7 @@ public class Main {
 		UserDAO userDAO = new UserDAO();
 		
 		while(true) {
-			
+		
 			switch(choice) {
 				case "1":
 					User newUser = new User();
@@ -27,8 +27,8 @@ public class Main {
 					break;
 					
 				case "2":
-					System.out.println("\nCase 2");
-					break;
+					userDAO.read();
+					break; 
 					
 				case "5":
 					System.exit(0);

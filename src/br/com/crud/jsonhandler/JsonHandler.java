@@ -2,63 +2,70 @@ package br.com.crud.jsonhandler;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import br.com.crud.ConnectionFactory.ConnectionFactory;
 import br.com.crud.user.User;
 
-
 public class JsonHandler {
-	
-	public static void createJsonFile(User user) throws JSONException {
-		JSONObject objJson = new JSONObject();
+
+	public static void createJsonFile() throws JSONException, ClassNotFoundException, SQLException {
+		String sql = "SELECT * FROM users";
+		Map json = new HashMap();
+		List list = new ArrayList();
+
+		Connection conn = ConnectionFactory.createConnectiontoMySQL();
+
+		ArrayList<User> usersArray = new ArrayList<User>();
+
+		Statement stt = conn.createStatement();
+		ResultSet rs = stt.executeQuery(sql);
+
+		if(rs!=null)
+	    {
+	        try {
+	            ResultSetMetaData metaData = rs.getMetaData();
+	            while(rs.next())
+	            {
+	                Map<String,Object> columnMap = new HashMap<String, Object>();
+	                for(int columnIndex=1;columnIndex<=metaData.getColumnCount();columnIndex++)
+	                {
+	                    if(rs.getString(metaData.getColumnName(columnIndex))!=null)
+	                        columnMap.put(metaData.getColumnLabel(columnIndex), rs.getString(metaData.getColumnName(columnIndex)));
+	                    else
+	                        columnMap.put(metaData.getColumnLabel(columnIndex), "");
+	                }
+	                list.add(columnMap);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        json.put("user", list);
+	     }
 		
-		objJson.put("id", user.getId());
-		objJson.put("name", user.getName());
-		objJson.put("birth date", user.getBirthDate());
-		objJson.put("email", user.getEmail());
-		objJson.put("job", user.getJob());
-		
-		try{
-			  FileWriter fstream = new FileWriter("userList.json",true);
-			  BufferedWriter out = new BufferedWriter(fstream);
-			  out.write(objJson.toString() + "\n\n");
-			  out.close();
-		  }catch (Exception e){
-			 System.err.println("Error while writing to file: " +
-		          e.getMessage());
-		  }
-		
-				
-//		try(FileWriter file = new FileWriter("userList.json")){
-//			if(file.)
-//			file.write(objJson.toString());
-//			file.flush();
-//		}catch(IOException e) {
-//			e.printStackTrace();
-//		}	
-//		System.out.println(objJson);
-		
-//		File log = new File("userList.json");
-//
-//				try{
-//				    if(!log.exists()){
-//				        System.out.println("We had to make a new file.");
-//				        log.createNewFile();
-//				    }
-//
-//				    FileWriter fileWriter = new FileWriter(log, true);
-//
-//				    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-//				    bufferedWriter.write("******* " + timeStamp.toString() +"******* " + "\n");
-//				    bufferedWriter.close();
-//
-//				    System.out.println("Done");
-//				} catch(IOException e) {
-//				    System.out.println("COULD NOT LOG!!");
-//				}
+	     //return JSONValue.toJSONString(json);
+
+
 	}
 }

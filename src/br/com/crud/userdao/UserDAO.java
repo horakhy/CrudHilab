@@ -1,10 +1,14 @@
 package br.com.crud.userdao;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -12,36 +16,35 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 
-import br.com.crud.jsonhandler.JsonHandler;
+import br.com.crud.ConnectionFactory.ConnectionFactory;
+//import br.com.crud.jsonhandler.JsonHandler;
 import br.com.crud.user.User;
-
-/*public enum Jobs{
-	Desenvolvedor, BDA, Gerente_de_Sistemas, Arquiteto_de_software;
-}
- */
 
 public class UserDAO {
 	// CRUD:
-	//	() Create
+	//	(V) Create
 	//	() Read
 	//	() Update
 	//	() Delete
 
 	// Create the user and initializes its values
-	public void create(User user){
+	public void create(User user) throws ClassNotFoundException, SQLException{
 		// Variables that're going to store the input data
 		String[] name;;
 		String date;
 		String email;
 		int jobChoice;
+		
+		// Maping the job choices
 		Map<Integer, String> jobs = new HashMap<Integer, String>();
 		jobs.put(1, "Desenvolvedor");
 		jobs.put(2, "BDA");
 		jobs.put(3, "Gerente de Sistemas");
 		jobs.put(4, "Arquiteto de software");
+		
 		Scanner scan = new Scanner(System.in);
 
-		user.setId(123);
+		//user.setId(123);
 		
 		// Checks and attributes the name 
 		do {
@@ -88,16 +91,55 @@ public class UserDAO {
 		
 		user.setJob(jobs.get(jobChoice));
 		
+		save(user);
+		
+//		try {
+//			JsonHandler.createJsonFile(user);
+//		}catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+	}
+	
+	public void save(User user) {
+		String sql = "INSERT INTO users (name, birth_date, email, job)"
+				+ " VALUES (?, ?, ?, ?)";
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		
 		try {
-			JsonHandler.createJsonFile(user);
-		}catch (JSONException e) {
+			// Creating a connection with MySQL DB
+			conn = ConnectionFactory.createConnectiontoMySQL();
+			
+			// Create PreparedStatement to execute the query
+			pstm = (PreparedStatement)conn.prepareStatement(sql);
+			
+			pstm.setString(1, user.getName());
+			
+			pstm.setString(2, user.getBirthDate());
+			
+			pstm.setString(3, user.getEmail());
+			
+			pstm.setString(4, user.getJob());
+			
+			pstm.execute();
+			
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		
 	}
 
 	// Return the values on the file
-	public void read() {
-
+	public void read() throws Exception {
+		//JsonHandler.readFile();
 	}
 
 	// Update a value on the file
