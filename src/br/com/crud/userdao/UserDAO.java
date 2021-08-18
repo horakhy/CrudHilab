@@ -1,7 +1,5 @@
 package br.com.crud.userdao;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -282,6 +280,7 @@ public class UserDAO {
 
 			// Create PreparedStatement to execute the query
 			pstm = (PreparedStatement)conn.prepareStatement(sql);
+						
 			pstm.setString(1, id);
 			pstm.execute();
 
