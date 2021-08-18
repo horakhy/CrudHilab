@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,18 +19,20 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 
 import br.com.crud.ConnectionFactory.ConnectionFactory;
+import br.com.crud.jsonhandler.JsonHandler;
 //import br.com.crud.jsonhandler.JsonHandler;
 import br.com.crud.user.User;
 
 public class UserDAO {
 	// CRUD:
 	//	(V) Create
-	//	() Read
+	//	(V) Read
 	//	() Update
 	//	() Delete
 
 	// Create the user and initializes its values
 	public void create(User user) throws ClassNotFoundException, SQLException{
+		
 		// Variables that're going to store the input data
 		String[] name;;
 		String date;
@@ -93,11 +97,7 @@ public class UserDAO {
 		
 		save(user);
 		
-//		try {
-//			JsonHandler.createJsonFile(user);
-//		}catch (JSONException e) {
-//			e.printStackTrace();
-//		}
+	
 	}
 	
 	public void save(User user) {
@@ -124,27 +124,56 @@ public class UserDAO {
 			
 			pstm.execute();
 			
+			JsonHandler.createJsonFile();
+			conn.close();
 			
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
-		
-		
 	}
 
-	// Return the values on the file
+	// Return the values on the DB
 	public void read() throws Exception {
-		//JsonHandler.readFile();
+		String sql = "SELECT * FROM users";
+		
+		try {
+			Connection conn = null;
+			PreparedStatement pstm = null;
+			
+			// Creating a connection with MySQL DB
+			conn = ConnectionFactory.createConnectiontoMySQL();
+						
+			// Create PreparedStatement to execute the query
+			pstm = (PreparedStatement)conn.prepareStatement(sql);
+			
+			ResultSet rs = pstm.executeQuery(sql);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			
+			while (rs.next()) {
+			    for (int i = 1; i <= columnsNumber; i++) {
+			        if (i > 1) System.out.print(",  ");
+			        String columnValue = rs.getString(i);
+			        System.out.print(rsmd.getColumnName(i) + ":" + " " + columnValue);
+			    }
+			    System.out.println("");
+			}
+			conn.close();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	// Update a value on the file
+	// Update a value from the DB
 	public void update() {
-
+		
 	}
 
 	// Deletes a user from the file

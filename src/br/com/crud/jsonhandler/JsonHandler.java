@@ -29,8 +29,10 @@ import br.com.crud.ConnectionFactory.ConnectionFactory;
 import br.com.crud.user.User;
 
 public class JsonHandler {
-
+	private static FileWriter file;
+	
 	public static void createJsonFile() throws JSONException, ClassNotFoundException, SQLException {
+		
 		String sql = "SELECT * FROM users";
 		Map json = new HashMap();
 		List list = new ArrayList();
@@ -43,29 +45,46 @@ public class JsonHandler {
 		ResultSet rs = stt.executeQuery(sql);
 
 		if(rs!=null)
-	    {
-	        try {
-	            ResultSetMetaData metaData = rs.getMetaData();
-	            while(rs.next())
-	            {
-	                Map<String,Object> columnMap = new HashMap<String, Object>();
-	                for(int columnIndex=1;columnIndex<=metaData.getColumnCount();columnIndex++)
-	                {
-	                    if(rs.getString(metaData.getColumnName(columnIndex))!=null)
-	                        columnMap.put(metaData.getColumnLabel(columnIndex), rs.getString(metaData.getColumnName(columnIndex)));
-	                    else
-	                        columnMap.put(metaData.getColumnLabel(columnIndex), "");
-	                }
-	                list.add(columnMap);
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        json.put("user", list);
-	     }
-		
-	     //return JSONValue.toJSONString(json);
+		{
+			try {
+				ResultSetMetaData metaData = rs.getMetaData();
+				while(rs.next())
+				{
+					Map<String,Object> columnMap = new HashMap<String, Object>();
+					for(int columnIndex=1;columnIndex<=metaData.getColumnCount();columnIndex++)
+					{
+						if(rs.getString(metaData.getColumnName(columnIndex))!=null)
+							columnMap.put(metaData.getColumnLabel(columnIndex), rs.getString(metaData.getColumnName(columnIndex)));
+						else
+							columnMap.put(metaData.getColumnLabel(columnIndex), "");
+					}
+					list.add(columnMap);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			json.put("users", list);
+		}
+		try {
+
+			// Constructs a FileWriter given a file name, using the platform's default charset
+			file = new FileWriter("userList.json");
+			file.write(JSONValue.toJSONString(json));
+			System.out.println("Successfully Copied JSON Object to File...");
 
 
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		} finally {
+
+			try {
+				file.flush();
+				file.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
 	}
 }
