@@ -29,7 +29,14 @@ public class Main {
 				case "2":
 					userDAO.read();
 					break; 
-					
+				
+				case "3":
+					userDAO.update();
+					break;
+				
+				case "4":
+					userDAO.delete();
+					break;
 				case "5":
 					System.exit(0);
 					break;
