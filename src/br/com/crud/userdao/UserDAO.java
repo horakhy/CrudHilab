@@ -247,7 +247,7 @@ public class UserDAO {
 			pstm.setString(3, email);
 
 			pstm.setString(4, jobs.get(jobChoice));
-			
+
 			pstm.setString(5, id);
 
 			pstm.execute();
@@ -267,6 +267,35 @@ public class UserDAO {
 
 	// Deletes a user from the file
 	public void delete() {
+		String id;
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Qual o id do usuário a ser deletado?");
+		id = scan.nextLine();
+
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		String sql = "DELETE FROM users WHERE id = ?";
+
+		try {
+			// Creating a connection with MySQL DB
+			conn = ConnectionFactory.createConnectiontoMySQL();
+
+			// Create PreparedStatement to execute the query
+			pstm = (PreparedStatement)conn.prepareStatement(sql);
+			pstm.setString(1, id);
+			pstm.execute();
+
+			JsonHandler.createJsonFile();
+			conn.close();
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (JSONException e){
+			e.printStackTrace();
+		}
+
 
 	}
 

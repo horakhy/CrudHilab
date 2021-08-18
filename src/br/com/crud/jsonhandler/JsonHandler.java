@@ -1,13 +1,8 @@
 package br.com.crud.jsonhandler;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -18,12 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
+
 
 import br.com.crud.ConnectionFactory.ConnectionFactory;
 import br.com.crud.user.User;
@@ -70,7 +64,7 @@ public class JsonHandler {
 			// Constructs a FileWriter given a file name, using the platform's default charset
 			file = new FileWriter("userList.json");
 			file.write(JSONValue.toJSONString(json));
-			System.out.println("Successfully Copied JSON Object to File...");
+			System.out.println("JSON file was Succesfully updated");
 
 
 		} catch (IOException e) {
