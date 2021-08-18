@@ -10,6 +10,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+
+import br.com.crud.jsonhandler.JsonHandler;
 import br.com.crud.user.User;
 
 /*public enum Jobs{
@@ -25,9 +28,9 @@ public class UserDAO {
 	//	() Delete
 
 	// Create the user and initializes its values
-	public void create(User user) {
+	public void create(User user){
 		// Variables that're going to store the input data
-		String[] name;
+		String[] name;;
 		String date;
 		String email;
 		int jobChoice;
@@ -38,9 +41,8 @@ public class UserDAO {
 		jobs.put(4, "Arquiteto de software");
 		Scanner scan = new Scanner(System.in);
 
-
 		user.setId(123);
-
+		
 		// Checks and attributes the name 
 		do {
 			System.out.print("Name (i.e Raian Gomes): ");
@@ -49,7 +51,11 @@ public class UserDAO {
 			name = getFirstAndLastName(inputName);
 		}while(name.length < 2);
 		
-		user.setName(name.toString());
+		String fullName = "";
+		for(String n: name)
+			fullName = fullName + n;
+			
+		user.setName(fullName);
 
 		// Validates the date
 		do {
@@ -60,6 +66,7 @@ public class UserDAO {
 
 		// Sets the valid date
 		user.setBirthDate(date);
+	
 
 		// Validates the email and stores it if it's valid
 		do {
@@ -71,14 +78,21 @@ public class UserDAO {
 		// Sets the valid email
 		user.setEmail(email);
 		
+		
 		do{
-			System.out.print("Job\n1.Desenvolvedor\n2.BDA\n3.Gerente de Sistemas\n4.Arquiteto de software");
+			System.out.print("Job\n1.Desenvolvedor\n2.BDA\n3.Gerente de Sistemas\n4.Arquiteto de software\n");
 			scan = new Scanner(System.in);
 			jobChoice = Integer.parseInt(scan.nextLine());
 
 		}while(!validateJob(jobChoice));
 		
 		user.setJob(jobs.get(jobChoice));
+		
+		try {
+			JsonHandler.createJsonFile(user);
+		}catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Return the values on the file
@@ -98,13 +112,13 @@ public class UserDAO {
 
 	public static boolean validateDate(String strDate)
 	{
-		/* Check if date is 'null' */
+		// Check if date is 'null' 
 		if (strDate.trim().equals(""))
 		{
 			System.out.println("Invalid Date format");
 			return false;
 		}
-		/* Date is not 'null' */
+		// Date is not 'null' 
 		else
 		{
 			/*
@@ -120,13 +134,13 @@ public class UserDAO {
 				Date javaDate = sdfrmt.parse(strDate); 
 				//System.out.println(strDate + " is a valid date format");
 			}
-			/* Date format is invalid */
+			// Date format is invalid 
 			catch (ParseException e)
 			{
 				System.out.println(strDate + " is an invalid Date format");
 				return false;
 			}
-			/* Return true if date format is valid */
+			// Return true if date format is valid 
 			return true;
 		}
 	}
@@ -166,7 +180,7 @@ public class UserDAO {
 		}
 
 		String lastName = name[name.length-1];
-		String[] fullName = new String[100];
+		String[] fullName = new String[3];
 
 
 		if (name.length > 1){
@@ -180,4 +194,4 @@ public class UserDAO {
 			return name;
 		}
 	}
-} // Andre  __
+}

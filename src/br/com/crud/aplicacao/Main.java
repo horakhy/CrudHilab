@@ -43,7 +43,8 @@ public class Main {
 			System.out.println("\nO que deseja fazer?");
 			System.out.println("\n1.Create\n2.Read\n3.Update\n4.Delete\n5.Exit");
 			
-			choice = scan.nextLine();
+			if(scan.hasNext())
+				choice = scan.nextLine();
 		}
 	}
 }
